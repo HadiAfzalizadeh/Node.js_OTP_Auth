@@ -1,4 +1,4 @@
-export const SendVerificationCode = async (req, res) => {
+exports.SendVerificationCode = (req, res) => {
   const data = {
     PhoneNumber: req.PhoneNumber,
     Code: 454545,
@@ -7,6 +7,6 @@ export const SendVerificationCode = async (req, res) => {
   res.send(data);
 };
 
-export const SignIn = async (req, res) => {};
+// export const SignIn = async (req, res) => {};
 
-export const SignOut = async (req, res) => {};
+// export const SignOut = async (req, res) => {};
