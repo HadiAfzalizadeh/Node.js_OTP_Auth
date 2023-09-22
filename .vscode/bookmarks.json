@@ -1,0 +1,29 @@
+{
+	"files": [
+		{
+			"path": "Controllers/Auth.Controller.js",
+			"bookmarks": [
+				{
+					"line": 2,
+					"column": 4,
+					"label": "generate 6 digit verification code"
+				},
+				{
+					"line": 5,
+					"column": 0,
+					"label": "send verification code to the phone number in req"
+				},
+				{
+					"line": 6,
+					"column": 18,
+					"label": "store the verification code to the server cash with the phone number key for one minute if the code was sent to the user successfully"
+				},
+				{
+					"line": 7,
+					"column": 5,
+					"label": "make res to user with appropriate message and status code"
+				}
+			]
+		}
+	]
+}

@@ -1,9 +1,21 @@
 const express = require('express');
+const {
+  signupRequestValidation,
+  signupCheckCache,
+  signUpCheckTtlZero,
+} = require('../middlewares/auth.middleware');
 
 const router = express.Router();
 
 const authController = require('../controllers/auth.controller');
 
-router.get('/SendVerificationCode', authController.SendVerificationCode);
+router
+  .route('/signup')
+  .get(
+    signupRequestValidation,
+    signUpCheckTtlZero,
+    signupCheckCache,
+    authController.SignUp,
+  );
 
 module.exports = router;
