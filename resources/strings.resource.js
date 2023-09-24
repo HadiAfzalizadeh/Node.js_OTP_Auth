@@ -1,5 +1,5 @@
 const userMessages = Object.freeze({
-  SENDING_OTP_SMS_ERROR_MESSAGE:
+  SEND_OTP_SMS_ERROR_MESSAGE:
     'ارسال پیامک اعتبارسنجی با مشکل مواجه شد.لطفا مجددا تلاش نموده با پشنیبانی تماس بگیرید',
   GENERAL_ERROR_MESSAGE: 'عملیات با مشکل مواجه شد',
   INVALID_PARAMETERS: 'مقادیر ورودی نامعتبر هستند',

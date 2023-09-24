@@ -1,15 +1,17 @@
-const NodeCache = require('node-cache');
 const express = require('express');
 const {
   globalErrorHandler,
 } = require('./middlewares/errorhandlers.middleware');
 
-const verificationCache = new NodeCache();
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
+
 const app = express();
 
 const router = require('./routes/auth.route');
 
-const port = 3000;
+const port = process.env.PORT;
 
 app.use('/auth', router);
 

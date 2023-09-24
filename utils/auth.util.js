@@ -1,12 +1,12 @@
 const axios = require('axios');
-const { smsProviderToken } = require('../config');
 const { SENDING_OTP_SMS_ERROR_MESSAGE } =
   require('../resources/strings.resource').userMessages;
 const { CustomError } = require('./general.util');
+const { verificationCache } = require('../global.variables');
 
 exports.sendOtpSms = (phoneNumber, verificationCode) => {
   const url = 'https://api.kavenegar.com/v1/'
-    .concat(smsProviderToken)
+    .concat(process.env.SMS_PROVIDER_TOKEN)
     .concat('/verify/lookup.json?')
     .concat('receptor=')
     .concat(phoneNumber)
@@ -18,7 +18,7 @@ exports.sendOtpSms = (phoneNumber, verificationCode) => {
     .get(url)
     .then((res) => res)
     .catch((error) => {
-      global.verificationCache.del(phoneNumber);
+      // verificationCache.del(phoneNumber);
       throw new CustomError(error, SENDING_OTP_SMS_ERROR_MESSAGE, 500, true);
     });
 };

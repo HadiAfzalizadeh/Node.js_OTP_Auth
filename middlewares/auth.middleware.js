@@ -4,8 +4,9 @@ const { INVALID_PARAMETERS } =
   require('../resources/strings.resource').userMessages;
 const { SERVER_CACHE_ZERO } =
   require('../resources/strings.resource').dataBaseMessages;
-const { SENDING_OTP_SMS_ERROR_MESSAGE } =
+const { SEND_OTP_SMS_ERROR_MESSAGE } =
   require('../resources/strings.resource').userMessages;
+const { verificationCache } = require('../global.variables');
 
 exports.signupRequestValidation = (req, res, next) => {
   const schema = Joi.string()
@@ -23,11 +24,11 @@ exports.signupRequestValidation = (req, res, next) => {
 };
 
 exports.signUpCheckTtlZero = (req, res, next) => {
-  if (global.verificationCache.getTtl(req.query.phoneNumber) === 0) {
-    global.verificationCache.del(req.query.phoneNumber);
+  if (verificationCache.getTtl(req.query.phoneNumber) === 0) {
+    verificationCache.del(req.query.phoneNumber);
     throw new CustomError(
       (new Error().message = SERVER_CACHE_ZERO),
-      SENDING_OTP_SMS_ERROR_MESSAGE,
+      SEND_OTP_SMS_ERROR_MESSAGE,
       500,
       true,
     );
@@ -36,10 +37,10 @@ exports.signUpCheckTtlZero = (req, res, next) => {
 };
 
 exports.signupCheckCache = (req, res, next) => {
-  if (global.verificationCache.get(req.query.phoneNumber) !== undefined) {
+  if (verificationCache.get(req.query.phoneNumber) !== undefined) {
     res.status(200).send({
       data: {
-        delayTime: global.verificationCache.getTtl(req.query.phoneNumber),
+        delayTime: verificationCache.getTtl(req.query.phoneNumber),
       },
     });
   }

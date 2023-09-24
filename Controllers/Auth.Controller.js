@@ -4,20 +4,21 @@ const { SENDING_OTP_SMS_ERROR_MESSAGE } =
   require('../resources/strings.resource').userMessages;
 const { SERVER_CACHE_PROBLEM_STORING_VARICATION_CODE } =
   require('../resources/strings.resource').dataBaseMessages;
+const { verificationCache } = require('../global.variables');
 
 exports.SignUp = async (req, res, next) => {
   try {
     const verificationCode = Math.floor(Math.random() * 899999 + 100000);
-    const success = global.verificationCache.set(
+    const success = verificationCache.set(
       req.query.phoneNumber,
       verificationCode,
       60,
     );
     if (success) {
-      await sendOtpSms(req.query.phoneNumber, verificationCode);
+      //await sendOtpSms(req.query.phoneNumber, verificationCode);
       res.status(200).send({
         data: {
-          delayTime: global.verificationCache.getTtl(req.query.phoneNumber),
+          delayTime: verificationCache.getTtl(req.query.phoneNumber),
         },
       });
     }
