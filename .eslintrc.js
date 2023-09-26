@@ -21,5 +21,8 @@ module.exports = {
   },
   rules: {
     'linebreak-style': 'off',
+    'import/no-unresolved': 'off',
+    'prefer-regex-literals': 'off',
+    'global-require': 'off',
   },
 };

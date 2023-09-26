@@ -1,9 +1,6 @@
-const { ExceptionRepository } = require('../repositories/exception.repository');
-const { CustomError } = require('../utils/general.util');
-const { GENERAL_ERROR_MESSAGE } =
-  require('../resources/strings.resource').userMessages;
-
-const exceptionRepository = new ExceptionRepository();
+const { ExceptionRepository } = require('@repositories/exception');
+const { CustomError } = require('@utils/general');
+const { GENERAL_ERROR_MESSAGE } = require('@resources/strings').userMessages;
 
 exports.globalErrorHandler = (err, req, res, next) => {
   let customError;
@@ -13,7 +10,7 @@ exports.globalErrorHandler = (err, req, res, next) => {
     customError = new CustomError(err, GENERAL_ERROR_MESSAGE, 500, true);
   }
   if (customError.saveToDatabase) {
-    exceptionRepository.insert(customError);
+    ExceptionRepository.insert(customError);
   }
   res.status(customError.userStatus).send({ message: customError.userMessage });
 };

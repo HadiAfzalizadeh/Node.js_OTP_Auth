@@ -3,11 +3,11 @@ const {
   signupRequestValidation,
   signupCheckCache,
   signUpCheckTtlZero,
-} = require('../middlewares/auth.middleware');
+} = require('@middlewares/auth');
 
 const router = express.Router();
 
-const authController = require('../controllers/auth.controller');
+const authController = require('@controllers/auth');
 
 router
   .route('/signup')

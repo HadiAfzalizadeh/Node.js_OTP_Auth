@@ -1,8 +1,8 @@
 const axios = require('axios');
 const { SENDING_OTP_SMS_ERROR_MESSAGE } =
-  require('../resources/strings.resource').userMessages;
-const { CustomError } = require('./general.util');
-const { verificationCache } = require('../global.variables');
+  require('@resources/strings').userMessages;
+const { CustomError } = require('@utils/general');
+const { verificationCache } = require('@root/global');
 
 exports.sendOtpSms = (phoneNumber, verificationCode) => {
   const url = 'https://api.kavenegar.com/v1/'

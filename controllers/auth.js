@@ -1,10 +1,10 @@
-const { sendOtpSms } = require('../utils/auth.util');
-const { CustomError } = require('../utils/general.util');
+const { sendOtpSms } = require('@utils/auth');
+const { CustomError } = require('@utils/general');
 const { SENDING_OTP_SMS_ERROR_MESSAGE } =
-  require('../resources/strings.resource').userMessages;
+  require('@resources/strings').userMessages;
 const { SERVER_CACHE_PROBLEM_STORING_VARICATION_CODE } =
-  require('../resources/strings.resource').dataBaseMessages;
-const { verificationCache } = require('../global.variables');
+  require('@resources/strings').dataBaseMessages;
+const { verificationCache } = require('@root/global');
 
 exports.SignUp = async (req, res, next) => {
   try {

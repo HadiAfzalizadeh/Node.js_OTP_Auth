@@ -2,7 +2,7 @@ const { jsonc } = require('jsonc');
 const { MongoClient } = require('mongodb');
 
 class ExceptionRepository {
-  insert(errObject) {
+  static insert(errObject) {
     MongoClient.connect(process.env.DATABASE_CONNECTION_URI)
       .then((db) => {
         const dbo = db.db('ByPass');

@@ -1,7 +1,6 @@
+require('module-alias/register');
 const express = require('express');
-const {
-  globalErrorHandler,
-} = require('./middlewares/errorhandlers.middleware');
+const { globalErrorHandler } = require('@middlewares/errorhandlers');
 
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
@@ -9,7 +8,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 const app = express();
 
-const router = require('./routes/auth.route');
+const router = require('@routes/auth');
 
 const port = process.env.PORT;
 

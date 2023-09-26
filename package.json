@@ -15,6 +15,7 @@
     "express": "^4.18.2",
     "joi": "^17.10.2",
     "jsonc": "^2.0.0",
+    "module-alias": "^2.2.3",
     "mongodb": "^6.0.0",
     "node-cache": "^5.1.2"
   },
@@ -22,5 +23,15 @@
     "eslint": "^8.43.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.27.5"
+  },
+  "_moduleAliases": {
+    "@root": ".",
+    "@controllers": "./controllers",
+    "@middlewares": "./middlewares",
+    "@models": "./models",
+    "@repositories": "./repositories",
+    "@resources": "./resources",
+    "@routes": "./routes",
+    "@utils": "./utils"
   }
 }

@@ -1,12 +1,9 @@
 const Joi = require('joi');
-const { CustomError } = require('../utils/general.util');
-const { INVALID_PARAMETERS } =
-  require('../resources/strings.resource').userMessages;
-const { SERVER_CACHE_ZERO } =
-  require('../resources/strings.resource').dataBaseMessages;
-const { SEND_OTP_SMS_ERROR_MESSAGE } =
-  require('../resources/strings.resource').userMessages;
-const { verificationCache } = require('../global.variables');
+const { CustomError } = require('@utils/general');
+const { INVALID_PARAMETERS, SEND_OTP_SMS_ERROR_MESSAGE } =
+  require('@resources/strings').userMessages;
+const { SERVER_CACHE_ZERO } = require('@resources/strings').dataBaseMessages;
+const { verificationCache } = require('@root/global');
 
 exports.signupRequestValidation = (req, res, next) => {
   const schema = Joi.string()
