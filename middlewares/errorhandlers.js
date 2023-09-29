@@ -13,4 +13,5 @@ exports.globalErrorHandler = (err, req, res, next) => {
     ExceptionRepository.insert(customError);
   }
   res.status(customError.userStatus).send({ message: customError.userMessage });
+  next();
 };

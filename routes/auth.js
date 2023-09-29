@@ -1,8 +1,7 @@
 const express = require('express');
 const {
-  signupRequestValidation,
-  signupCheckCache,
-  signUpCheckTtlZero,
+  signUpRequestValidation,
+  signUpCheckCache,
 } = require('@middlewares/auth');
 
 const router = express.Router();
@@ -11,11 +10,8 @@ const authController = require('@controllers/auth');
 
 router
   .route('/signup')
-  .get(
-    signupRequestValidation,
-    signUpCheckTtlZero,
-    signupCheckCache,
-    authController.SignUp,
-  );
+  .get(signUpRequestValidation, signUpCheckCache, authController.SignUp);
+
+router.route('/signin').post(authController.SignIn);
 
 module.exports = router;

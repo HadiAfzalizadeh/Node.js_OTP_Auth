@@ -1,11 +1,15 @@
 const Joi = require('joi');
+const { bcrypt } = require('@root/global');
 const { CustomError } = require('@utils/general');
-const { INVALID_PARAMETERS, SEND_OTP_SMS_ERROR_MESSAGE } =
-  require('@resources/strings').userMessages;
-const { SERVER_CACHE_ZERO } = require('@resources/strings').dataBaseMessages;
+const {
+  INVALID_PARAMETERS,
+  NOT_REGISTERED_YET,
+  INVALIDـVARIFICATION_CODE,
+  VARIFICATION_CODE_IS_ALREADY_SENT,
+} = require('@resources/strings').userMessages;
 const { verificationCache } = require('@root/global');
 
-exports.signupRequestValidation = (req, res, next) => {
+exports.signUpRequestValidation = (req, res, next) => {
   const schema = Joi.string()
     .pattern(
       new RegExp(
@@ -20,26 +24,26 @@ exports.signupRequestValidation = (req, res, next) => {
   next();
 };
 
-exports.signUpCheckTtlZero = (req, res, next) => {
-  if (verificationCache.getTtl(req.query.phoneNumber) === 0) {
-    verificationCache.del(req.query.phoneNumber);
-    throw new CustomError(
-      (new Error().message = SERVER_CACHE_ZERO),
-      SEND_OTP_SMS_ERROR_MESSAGE,
-      500,
-      true,
-    );
+exports.signUpCheckCache = (req, res, next) => {
+  if (verificationCache.get(req.query.phoneNumber) !== undefined) {
+    throw new CustomError(null, VARIFICATION_CODE_IS_ALREADY_SENT, 403, false);
   }
   next();
 };
 
-exports.signupCheckCache = (req, res, next) => {
-  if (verificationCache.get(req.query.phoneNumber) !== undefined) {
-    res.status(200).send({
-      data: {
-        delayTime: verificationCache.getTtl(req.query.phoneNumber),
-      },
-    });
+exports.signInCheckCache = (req, res, next) => {
+  const hashedVerificationCode = verificationCache.get(req.get('phoneNumber'));
+  if (hashedVerificationCode === undefined) {
+    throw new CustomError(null, NOT_REGISTERED_YET, 404);
+  }
+  verificationCache.del(req.get('phoneNumber'));
+  next();
+};
+
+exports.signInValidateVerificationCode = (req, res, next) => {
+  const hashedVerificationCode = verificationCache.get(req.get('phoneNumber'));
+  if (!bcrypt.compareSync(req.body.VerificationCode, hashedVerificationCode)) {
+    throw new CustomError(null, INVALIDـVARIFICATION_CODE, 400, true);
   }
   next();
 };

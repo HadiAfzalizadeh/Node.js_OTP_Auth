@@ -4,6 +4,10 @@ const { SENDING_OTP_SMS_ERROR_MESSAGE } =
 const { CustomError } = require('@utils/general');
 const { verificationCache } = require('@root/global');
 
+// exports.verifyToken = (token) => {
+//   jwt.verify(token, config.secrets.jwt);
+// };
+
 exports.sendOtpSms = (phoneNumber, verificationCode) => {
   const url = 'https://api.kavenegar.com/v1/'
     .concat(process.env.SMS_PROVIDER_TOKEN)
@@ -18,7 +22,7 @@ exports.sendOtpSms = (phoneNumber, verificationCode) => {
     .get(url)
     .then((res) => res)
     .catch((error) => {
-      // verificationCache.del(phoneNumber);
+      verificationCache.del(phoneNumber);
       throw new CustomError(error, SENDING_OTP_SMS_ERROR_MESSAGE, 500, true);
     });
 };
