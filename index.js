@@ -20,3 +20,5 @@ app.use('/auth', router);
 app.use(globalErrorHandler);
 
 app.listen(port, () => {});
+
+module.exports = app;
