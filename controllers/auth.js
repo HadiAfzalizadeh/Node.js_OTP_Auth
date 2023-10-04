@@ -31,7 +31,7 @@ exports.SignUp = async (req, res, next) => {
       );
     }
     // await sendOtpSms(req.query.phoneNumber, verificationCode);
-    // console.log(verificationCode);
+    console.log(verificationCode);
     res.status(201).send({
       message: '',
       data: {
@@ -45,12 +45,13 @@ exports.SignUp = async (req, res, next) => {
 };
 
 exports.SignIn = (req, res) => {
+  verificationCache.del(req.get('PhoneNumber'));
   res
     .header(
       'Set-Cookie',
       cookie.serialize(
         'jsonWebToken',
-        jwt.sign({ phoneNumber: req.get('phoneNumber') }, config.secrets.jwt),
+        jwt.sign({ phoneNumber: req.get('PhoneNumber') }, config.secrets.jwt),
         {
           httpOnly: true,
         },

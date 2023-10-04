@@ -1,23 +1,17 @@
 const Joi = require('joi');
 const { bcrypt } = require('@root/global');
 const { CustomError } = require('@utils/general');
+const { phoneNumberValidation } = require('@utils/auth');
 const {
   INVALID_PARAMETERS,
   NOT_REGISTERED_YET,
   INVALIDـVARIFICATION_CODE,
-  VARIFICATION_CODE_IS_ALREADY_SENT,
+  VARIFICATION_CODE_HAS_BEEN_SENT,
 } = require('@resources/strings').userMessages;
 const { verificationCache } = require('@root/global');
 
 exports.signUpRequestValidation = (req, res, next) => {
-  const schema = Joi.string()
-    .pattern(
-      new RegExp(
-        '09(1[0-9]|3[1-9]|2[1-9])-?[0-9]{3}-?[0-9]{4}|^0[0-9]{2,}[0-9]{7,}$',
-      ),
-    )
-    .required();
-  const { error } = schema.validate(req.query.phoneNumber);
+  const { error } = phoneNumberValidation(req.query.phoneNumber);
   if (error) {
     throw new CustomError(error, INVALID_PARAMETERS, 400);
   }
@@ -26,22 +20,29 @@ exports.signUpRequestValidation = (req, res, next) => {
 
 exports.signUpCheckCache = (req, res, next) => {
   if (verificationCache.get(req.query.phoneNumber) !== undefined) {
-    throw new CustomError(null, VARIFICATION_CODE_IS_ALREADY_SENT, 403, false);
+    throw new CustomError(null, VARIFICATION_CODE_HAS_BEEN_SENT, 403, false);
+  }
+  next();
+};
+
+exports.signInRequestValidation = (req, res, next) => {
+  const { error } = phoneNumberValidation.validate(req.get('PhoneNumber'));
+  if (error) {
+    throw new CustomError(error, INVALID_PARAMETERS, 400);
   }
   next();
 };
 
 exports.signInCheckCache = (req, res, next) => {
-  const hashedVerificationCode = verificationCache.get(req.get('phoneNumber'));
+  const hashedVerificationCode = verificationCache.get(req.get('PhoneNumber'));
   if (hashedVerificationCode === undefined) {
     throw new CustomError(null, NOT_REGISTERED_YET, 404);
   }
-  verificationCache.del(req.get('phoneNumber'));
   next();
 };
 
 exports.signInValidateVerificationCode = (req, res, next) => {
-  const hashedVerificationCode = verificationCache.get(req.get('phoneNumber'));
+  const hashedVerificationCode = verificationCache.get(req.get('PhoneNumber'));
   if (!bcrypt.compareSync(req.body.VerificationCode, hashedVerificationCode)) {
     throw new CustomError(null, INVALIDـVARIFICATION_CODE, 400, true);
   }

@@ -6,7 +6,7 @@ const userMessages = Object.freeze({
   NOT_REGISTERED_YET:
     'مدت زمان ورود کد اعتبارسنجی تمام شده است یا هنوز درخواست ارسال کد اعتبارسنجی نکرده اید. لطفا مجددا درخواست دهید',
   INVALID_VARIFICATION_CODE: 'کد اعتبارسنجی وارد شده معتبر نیست',
-  VARIFICATION_CODE_IS_ALREADY_SENT: 'کد اعتبارسنجی برای شما ارسال شده است',
+  VARIFICATION_CODE_HAS_BEEN_SENT: 'کد اعتبارسنجی برای شما ارسال شده است',
   SUCCESSFUL_LOGIN: 'شما با موفقیت وارد شدید',
 });
 
