@@ -1,11 +1,10 @@
-const Joi = require('joi');
 const { bcrypt } = require('@root/global');
 const { CustomError } = require('@utils/general');
 const { phoneNumberValidation } = require('@utils/auth');
 const {
   INVALID_PARAMETERS,
   NOT_REGISTERED_YET,
-  INVALIDـVARIFICATION_CODE,
+  INVALID_VARIFICATION_CODE,
   VARIFICATION_CODE_HAS_BEEN_SENT,
 } = require('@resources/strings').userMessages;
 const { verificationCache } = require('@root/global');
@@ -26,7 +25,7 @@ exports.signUpCheckCache = (req, res, next) => {
 };
 
 exports.signInRequestValidation = (req, res, next) => {
-  const { error } = phoneNumberValidation.validate(req.get('PhoneNumber'));
+  const { error } = phoneNumberValidation(req.get('phonenumber'));
   if (error) {
     throw new CustomError(error, INVALID_PARAMETERS, 400);
   }
@@ -34,7 +33,7 @@ exports.signInRequestValidation = (req, res, next) => {
 };
 
 exports.signInCheckCache = (req, res, next) => {
-  const hashedVerificationCode = verificationCache.get(req.get('PhoneNumber'));
+  const hashedVerificationCode = verificationCache.get(req.get('phonenumber'));
   if (hashedVerificationCode === undefined) {
     throw new CustomError(null, NOT_REGISTERED_YET, 404);
   }
@@ -42,9 +41,9 @@ exports.signInCheckCache = (req, res, next) => {
 };
 
 exports.signInValidateVerificationCode = (req, res, next) => {
-  const hashedVerificationCode = verificationCache.get(req.get('PhoneNumber'));
+  const hashedVerificationCode = verificationCache.get(req.get('phonenumber'));
   if (!bcrypt.compareSync(req.body.VerificationCode, hashedVerificationCode)) {
-    throw new CustomError(null, INVALIDـVARIFICATION_CODE, 400, true);
+    throw new CustomError(null, INVALID_VARIFICATION_CODE, 400, true);
   }
   next();
 };

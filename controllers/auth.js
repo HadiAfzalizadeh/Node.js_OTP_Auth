@@ -10,6 +10,9 @@ const { verificationCache } = require('@root/global');
 const { config } = require('@root/config');
 const cookie = require('cookie');
 
+// TODO - Authentication - Convert all if error statements to try catch
+// eslint-disable-next-line max-len
+// TODO - Authentication - when somethimg is checked on a middleware it can be accessed in next middlwares with req.sth = ... check for it
 exports.SignUp = async (req, res, next) => {
   // TODO - Authentication - Convert remain timestamp to second
   try {
@@ -32,7 +35,7 @@ exports.SignUp = async (req, res, next) => {
     }
     // await sendOtpSms(req.query.phoneNumber, verificationCode);
     console.log(verificationCode);
-    res.status(201).send({
+    return res.status(201).send({
       message: '',
       data: {
         delayTime: verificationCache.getTtl(req.query.phoneNumber) / 1000,
@@ -45,15 +48,16 @@ exports.SignUp = async (req, res, next) => {
 };
 
 exports.SignIn = (req, res) => {
-  verificationCache.del(req.get('PhoneNumber'));
-  res
+  verificationCache.del(req.get('phonenumber'));
+  return res
     .header(
       'Set-Cookie',
       cookie.serialize(
-        'jsonWebToken',
-        jwt.sign({ phoneNumber: req.get('PhoneNumber') }, config.secrets.jwt),
+        'JWT',
+        jwt.sign({ phoneNumber: req.get('phonenumber') }, config.secrets.jwt),
         {
           httpOnly: true,
+          secure: true,
         },
       ),
     )
@@ -61,9 +65,19 @@ exports.SignIn = (req, res) => {
     .send({
       message: SUCCESSFUL_LOGIN,
     });
-  // TODO - Authentication - send token to user with unaccessible and not readable way (cookie) and make appropriate message and status code to the user
+  // add refresh token to website
   // TODO - Authentication - XSS attacks
   // TODO - Authentication - man-in-the middle attack
+  // eslint-disable-next-line max-len
   // TODO - Authentication - Brute force attack - 1 limit the number of tries and if dead line passed retry sending sms after ttl finished - 2 clound flare
   // TODO - Authentication - DOS and DDOS Attack also with one minute delay
+};
+
+exports.Protect = (req, res) => {
+  // eslint-disable-next-line max-len
+  // TODO - Authentication - check for bearer token in headers (authorization header must not be empty) - token also must have correct prefix
+  // TODO - Authentication - Verify received JWT
+  // TODO - Authentication - check is token a real user after verify
+  // TODO - Authentication - if token is a real user go to next middleware
+  // TODO - Authentication - if verify was false throw no auth exception
 };
