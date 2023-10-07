@@ -4,17 +4,18 @@ const { sendOtpSms } = require('@utils/auth');
 const { CustomError } = require('@utils/general');
 const { SENDING_OTP_SMS_ERROR_MESSAGE, SUCCESSFUL_LOGIN } =
   require('@resources/strings').userMessages;
-const { SERVER_CACHE_PROBLEM_STORING_VARIFICATION_CODE } =
-  require('@resources/strings').dataBaseMessages;
+const {
+  SERVER_CACHE_PROBLEM_STORING_VARIFICATION_CODE,
+  SUCCESS_SENDING_VARIFICATION_CODE,
+} = require('@resources/strings').dataBaseMessages;
 const { verificationCache } = require('@root/global');
 const { config } = require('@root/config');
 const cookie = require('cookie');
 
 // TODO - Authentication - Convert all if error statements to try catch
-// eslint-disable-next-line max-len
-// TODO - Authentication - when somethimg is checked on a middleware it can be accessed in next middlwares with req.sth = ... check for it
 exports.SignUp = async (req, res, next) => {
   // TODO - Authentication - Convert remain timestamp to second
+  // TODO - Authentication - store phone number in cookie for sign in
   try {
     const verificationCode = Math.floor(
       Math.random() * 899999 + 100000,
@@ -36,7 +37,7 @@ exports.SignUp = async (req, res, next) => {
     // await sendOtpSms(req.query.phoneNumber, verificationCode);
     console.log(verificationCode);
     return res.status(201).send({
-      message: '',
+      message: SUCCESS_SENDING_VARIFICATION_CODE,
       data: {
         delayTime: verificationCache.getTtl(req.query.phoneNumber) / 1000,
         phoneNumber: req.query.phoneNumber,

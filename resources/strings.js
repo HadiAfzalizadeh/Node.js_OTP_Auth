@@ -8,6 +8,8 @@ const userMessages = Object.freeze({
   INVALID_VARIFICATION_CODE: 'کد اعتبارسنجی وارد شده معتبر نیست',
   VARIFICATION_CODE_HAS_BEEN_SENT: 'کد اعتبارسنجی برای شما ارسال شده است',
   SUCCESSFUL_LOGIN: 'شما با موفقیت وارد شدید',
+  SUCCESS_SENDING_VARIFICATION_CODE:
+    'کد اعتبار سنجی با موفقیت برای شما ارسال شد',
 });
 
 const dataBaseMessages = Object.freeze({

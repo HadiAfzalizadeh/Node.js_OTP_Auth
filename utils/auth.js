@@ -1,6 +1,6 @@
 const Joi = require('joi');
 const axios = require('axios');
-const { SENDING_OTP_SMS_ERROR_MESSAGE } =
+const { SENDING_OTP_SMS_ERROR_MESSAGE, INVALID_PARAMETERS } =
   require('@resources/strings').userMessages;
 const { CustomError } = require('@utils/general');
 const { verificationCache } = require('@root/global');
@@ -24,7 +24,7 @@ exports.sendOtpSms = (phoneNumber, verificationCode) => {
     });
 };
 
-exports.phoneNumberValidation = (phoneNumber) => {
+exports.ValidatePhoneNumber = (phoneNumber) => {
   const phoneNumberschema = Joi.string()
     .pattern(
       new RegExp(
@@ -32,5 +32,18 @@ exports.phoneNumberValidation = (phoneNumber) => {
       ),
     )
     .required();
-  return phoneNumberschema.validate(phoneNumber);
+  const { error } = phoneNumberschema.validate(phoneNumber);
+  if (error) {
+    throw new CustomError(error, INVALID_PARAMETERS, 400);
+  }
+};
+
+exports.ValidateVerificationCode = (verificationCode) => {
+  const phoneNumberschema = Joi.string()
+    .pattern(new RegExp('^[0-9]{6,6}$'))
+    .required();
+  const { error } = phoneNumberschema.validate(verificationCode);
+  if (error) {
+    throw new CustomError(error, INVALID_PARAMETERS, 400);
+  }
 };

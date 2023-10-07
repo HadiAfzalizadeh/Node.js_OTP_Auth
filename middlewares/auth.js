@@ -1,8 +1,10 @@
 const { bcrypt } = require('@root/global');
 const { CustomError } = require('@utils/general');
-const { phoneNumberValidation } = require('@utils/auth');
 const {
-  INVALID_PARAMETERS,
+  ValidatePhoneNumber,
+  ValidateVerificationCode,
+} = require('@utils/auth');
+const {
   NOT_REGISTERED_YET,
   INVALID_VARIFICATION_CODE,
   VARIFICATION_CODE_HAS_BEEN_SENT,
@@ -10,10 +12,7 @@ const {
 const { verificationCache } = require('@root/global');
 
 exports.signUpRequestValidation = (req, res, next) => {
-  const { error } = phoneNumberValidation(req.query.phoneNumber);
-  if (error) {
-    throw new CustomError(error, INVALID_PARAMETERS, 400);
-  }
+  ValidatePhoneNumber(req.query.phoneNumber);
   next();
 };
 
@@ -25,24 +24,23 @@ exports.signUpCheckCache = (req, res, next) => {
 };
 
 exports.signInRequestValidation = (req, res, next) => {
-  const { error } = phoneNumberValidation(req.get('phonenumber'));
-  if (error) {
-    throw new CustomError(error, INVALID_PARAMETERS, 400);
-  }
+  ValidatePhoneNumber(req.get('phonenumber'));
+  ValidateVerificationCode(req.body.VerificationCode);
   next();
 };
 
 exports.signInCheckCache = (req, res, next) => {
-  const hashedVerificationCode = verificationCache.get(req.get('phonenumber'));
-  if (hashedVerificationCode === undefined) {
+  req.hashedVerificationCode = verificationCache.get(req.get('phonenumber'));
+  if (req.hashedVerificationCode === undefined) {
     throw new CustomError(null, NOT_REGISTERED_YET, 404);
   }
   next();
 };
 
 exports.signInValidateVerificationCode = (req, res, next) => {
-  const hashedVerificationCode = verificationCache.get(req.get('phonenumber'));
-  if (!bcrypt.compareSync(req.body.VerificationCode, hashedVerificationCode)) {
+  if (
+    !bcrypt.compareSync(req.body.VerificationCode, req.hashedVerificationCode)
+  ) {
     throw new CustomError(null, INVALID_VARIFICATION_CODE, 400, true);
   }
   next();
