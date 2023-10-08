@@ -12,6 +12,8 @@ exports.globalErrorHandler = (err, req, res, next) => {
   if (customError.saveToDatabase) {
     ExceptionRepository.insert(customError);
   }
-  res.status(customError.userStatus).send({ message: customError.userMessage });
+  res
+    .status(customError.userStatus)
+    .send({ message: customError.userMessage, data: customError.data });
   next();
 };

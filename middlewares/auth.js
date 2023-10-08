@@ -17,8 +17,11 @@ exports.signUpRequestValidation = (req, res, next) => {
 };
 
 exports.signUpCheckCache = (req, res, next) => {
-  if (verificationCache.get(req.query.phoneNumber) !== undefined) {
-    throw new CustomError(null, VARIFICATION_CODE_HAS_BEEN_SENT, 403, false);
+  const delayTime = verificationCache.get(req.query.phoneNumber);
+  if (delayTime !== undefined) {
+    throw new CustomError(null, VARIFICATION_CODE_HAS_BEEN_SENT, 403, false, {
+      delayTime: Math.ceil((delayTime - Date.now()) / 1000),
+    });
   }
   next();
 };

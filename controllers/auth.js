@@ -1,25 +1,24 @@
+const RandExp = require('randexp');
 const jwt = require('jsonwebtoken');
 const { bcrypt } = require('@root/global');
 const { sendOtpSms } = require('@utils/auth');
 const { CustomError } = require('@utils/general');
-const { SENDING_OTP_SMS_ERROR_MESSAGE, SUCCESSFUL_LOGIN } =
-  require('@resources/strings').userMessages;
 const {
-  SERVER_CACHE_PROBLEM_STORING_VARIFICATION_CODE,
+  SENDING_OTP_SMS_ERROR_MESSAGE,
+  SUCCESSFUL_LOGIN,
   SUCCESS_SENDING_VARIFICATION_CODE,
-} = require('@resources/strings').dataBaseMessages;
+} = require('@resources/strings').userMessages;
+const { SERVER_CACHE_PROBLEM_STORING_VARIFICATION_CODE } =
+  require('@resources/strings').dataBaseMessages;
 const { verificationCache } = require('@root/global');
 const { config } = require('@root/config');
 const cookie = require('cookie');
 
-// TODO - Authentication - Convert all if error statements to try catch
+// TODO - Authentication - Currect Custom error cunstructor
 exports.SignUp = async (req, res, next) => {
-  // TODO - Authentication - Convert remain timestamp to second
   // TODO - Authentication - store phone number in cookie for sign in
   try {
-    const verificationCode = Math.floor(
-      Math.random() * 899999 + 100000,
-    ).toString();
+    const verificationCode = new RandExp('^[0-9]{6,6}$').gen();
     if (
       !verificationCache.set(
         req.query.phoneNumber,
@@ -39,7 +38,9 @@ exports.SignUp = async (req, res, next) => {
     return res.status(201).send({
       message: SUCCESS_SENDING_VARIFICATION_CODE,
       data: {
-        delayTime: verificationCache.getTtl(req.query.phoneNumber) / 1000,
+        delayTime: Math.ceil(
+          (verificationCache.getTtl(req.query.phoneNumber) - Date.now()) / 1000,
+        ),
         phoneNumber: req.query.phoneNumber,
       },
     });
