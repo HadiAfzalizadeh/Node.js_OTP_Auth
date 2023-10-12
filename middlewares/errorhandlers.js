@@ -7,13 +7,15 @@ exports.globalErrorHandler = (err, req, res, next) => {
   if (err instanceof CustomError) {
     customError = err;
   } else {
-    customError = new CustomError(err, GENERAL_ERROR_MESSAGE, 500, true);
+    customError = new CustomError(GENERAL_ERROR_MESSAGE, 500)
+      .error(err)
+      .saveToDatabase(true);
   }
-  if (customError.saveToDatabase) {
+  if (customError.saveToDatabaseProp) {
     ExceptionRepository.insert(customError);
   }
   res
-    .status(customError.userStatus)
-    .send({ message: customError.userMessage, data: customError.data });
+    .status(customError.userStatusProp)
+    .send({ message: customError.userMessageProp, data: customError.dataProp });
   next();
 };

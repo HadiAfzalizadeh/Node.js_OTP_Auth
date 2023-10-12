@@ -1,40 +1,39 @@
 class CustomError extends Error {
-  name = 'CustomError';
-
-  err = null;
-
-  userMessage = '';
-
-  userStatus = 500;
-
-  saveToDatabase = true;
-
-  data = {};
-
-  constructor(
-    error,
-    userMessage,
-    userStatus,
-    saveToDatabase = false,
-    data = {},
-  ) {
+  constructor(userMessage, userStatus) {
     super();
-    this.error = error;
-    this.userMessage = userMessage;
-    this.userStatus = userStatus;
-    this.saveToDatabase = saveToDatabase;
-    this.data = data;
+    this.userMessageProp = userMessage;
+    this.userStatusProp = userStatus;
+    this.name = 'CustomError';
+    this.errorProp = null;
+    this.saveToDatabaseProp = false;
+    this.dataProp = {};
     Error.captureStackTrace(this, CustomError);
   }
 
-  // constructor() {
-  //   super();
-  //   Error.captureStackTrace(this, CustomError);
-  // }
+  error(error) {
+    this.errorProp = error;
+    return this;
+  }
 
-  error(err) {
-    this.err = err;
+  userMessage(userMessage) {
+    this.userMessageProp = userMessage;
+    return this;
+  }
+
+  userStatus(userStatus) {
+    this.userStatusProp = userStatus;
+    return this;
+  }
+
+  saveToDatabase(saveToDatabase) {
+    this.saveToDatabaseProp = saveToDatabase;
+    return this;
+  }
+
+  data(data) {
+    this.dataProp = data;
     return this;
   }
 }
+
 module.exports = { CustomError };

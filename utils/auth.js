@@ -20,7 +20,9 @@ exports.sendOtpSms = (phoneNumber, verificationCode) => {
     .then((res) => res)
     .catch((error) => {
       verificationCache.del(phoneNumber);
-      throw new CustomError(error, SENDING_OTP_SMS_ERROR_MESSAGE, 500, true);
+      throw new CustomError(SENDING_OTP_SMS_ERROR_MESSAGE, 500)
+        .error(error)
+        .saveToDatabase(true);
     });
 };
 
@@ -34,7 +36,7 @@ exports.ValidatePhoneNumber = (phoneNumber) => {
     .required();
   const { error } = phoneNumberschema.validate(phoneNumber);
   if (error) {
-    throw new CustomError(error, INVALID_PARAMETERS, 400);
+    throw new CustomError(INVALID_PARAMETERS, 400).error(error);
   }
 };
 
@@ -44,6 +46,6 @@ exports.ValidateVerificationCode = (verificationCode) => {
     .required();
   const { error } = phoneNumberschema.validate(verificationCode);
   if (error) {
-    throw new CustomError(error, INVALID_PARAMETERS, 400);
+    throw new CustomError(INVALID_PARAMETERS, 400).error(error);
   }
 };
