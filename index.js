@@ -19,6 +19,10 @@ app.use('/auth', router);
 
 app.use(protect);
 
+app.get('/', (req, res) => {
+  res.status(200).send({ result: 'You are our friend' });
+});
+
 app.use(globalErrorHandler);
 
 app.listen(port, () => {});

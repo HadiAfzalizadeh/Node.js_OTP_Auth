@@ -1,35 +1,32 @@
 const RandExp = require('randexp');
 const jwt = require('jsonwebtoken');
-const { bcrypt } = require('@root/global');
-const { sendOtpSms } = require('@utils/auth');
-const { CustomError } = require('@utils/general');
 const {
-  SENDING_OTP_SMS_ERROR_MESSAGE,
-  SUCCESSFUL_LOGIN,
-  SUCCESS_SENDING_VARIFICATION_CODE,
-} = require('@resources/strings').userMessages;
-const { SERVER_CACHE_PROBLEM_STORING_VARIFICATION_CODE } =
-  require('@resources/strings').dataBaseMessages;
+  sendOtpSms,
+  validatePhoneNumber,
+  setVerificationCache,
+  signUpCheckCache,
+  validateVerificationCode,
+  signInCheckCache,
+  signInValidateVerificationCode,
+} = require('@utils/auth');
+const { SUCCESSFUL_LOGIN, SUCCESS_SENDING_VARIFICATION_CODE } =
+  require('@resources/strings').userMessages;
 const { verificationCache } = require('@root/global');
 const { config } = require('@root/config');
 const cookie = require('cookie');
 
 exports.SignUp = async (req, res, next) => {
   try {
+    validatePhoneNumber(req.query.phoneNumber);
+
+    signUpCheckCache(req.query.phoneNumber);
+
     const verificationCode = new RandExp('^[0-9]{6,6}$').gen();
-    if (
-      !verificationCache.set(
-        req.query.phoneNumber,
-        bcrypt.hashSync(verificationCode, 10),
-        60,
-      )
-    ) {
-      throw new CustomError(SENDING_OTP_SMS_ERROR_MESSAGE, 500).error(
-        (new Error().message = SERVER_CACHE_PROBLEM_STORING_VARIFICATION_CODE),
-      );
-    }
-    // await sendOtpSms(req.query.phoneNumber, verificationCode);
-    console.log(verificationCode);
+
+    setVerificationCache(req.query.phoneNumber, verificationCode);
+
+    await sendOtpSms(req.query.phoneNumber, verificationCode);
+
     return res
       .header(
         'Set-Cookie',
@@ -54,13 +51,26 @@ exports.SignUp = async (req, res, next) => {
 };
 
 exports.SignIn = (req, res) => {
-  verificationCache.del(req.phoneNumber);
+  const headerPhoneNumber = cookie.parse(req.headers.cookie || '').phoneNumber;
+
+  validatePhoneNumber(headerPhoneNumber);
+
+  validateVerificationCode(req.body.VerificationCode);
+
+  signInCheckCache(headerPhoneNumber);
+
+  signInValidateVerificationCode(headerPhoneNumber, req.body.VerificationCode);
+
+  verificationCache.del(headerPhoneNumber);
   return res
     .header(
       'Set-Cookie',
       cookie.serialize(
-        'JWT',
-        jwt.sign({ phoneNumber: req.phoneNumber }, config.secrets.jwt),
+        'Refresh-Token',
+        jwt.sign(
+          { phoneNumber: headerPhoneNumber },
+          config.secrets.REFRESH_TOKEN_PRIVATE_KEY,
+        ),
         {
           httpOnly: true,
           secure: true,
@@ -70,6 +80,10 @@ exports.SignIn = (req, res) => {
     )
     .status(201)
     .send({
+      'X-Access-Token': jwt.sign(
+        { phoneNumber: headerPhoneNumber },
+        config.secrets.ACCESS_TOKEN_PRIVATE_KEY,
+      ),
       message: SUCCESSFUL_LOGIN,
     });
   // TODO - add refresh token to website

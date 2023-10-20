@@ -37,7 +37,7 @@ describe('POST /auth/SignIn', () => {
       .set('PhoneNumber', '09135350531');
     expect(res.statusCode).toBe(400);
   });
-  test('verification code should be present in correct format', async () => {
+  test('verification code should be in correct format', async () => {
     const body = {
       VerificationCode: '125851',
     };
@@ -46,5 +46,11 @@ describe('POST /auth/SignIn', () => {
       .send(body)
       .set('PhoneNumber', '09135350531');
     expect(res.statusCode).toBe(400);
+  });
+  test('The verification code must have been previously requested', async () => {
+    const res = await request(app)
+      .post('/auth/SignIn')
+      .set('PhoneNumber', '09135350533');
+    expect(res.statusCode).toBe(404);
   });
 });

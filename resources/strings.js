@@ -10,6 +10,7 @@ const userMessages = Object.freeze({
   SUCCESSFUL_LOGIN: 'شما با موفقیت وارد شدید',
   SUCCESS_SENDING_VARIFICATION_CODE:
     'کد اعتبار سنجی با موفقیت برای شما ارسال شد',
+  FORBIDDEN_ACCESS: 'دسترسی غیر مجاز',
 });
 
 const dataBaseMessages = Object.freeze({
