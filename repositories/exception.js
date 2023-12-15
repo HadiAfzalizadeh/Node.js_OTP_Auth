@@ -5,7 +5,7 @@ class ExceptionRepository {
   static insert(errObject) {
     MongoClient.connect(process.env.DATABASE_CONNECTION_URI)
       .then((db) => {
-        const dbo = db.db('ByPass');
+        const dbo = db.db(process.env.DATABASE_NAME);
         dbo
           .collection('Exception')
           .insertOne(

@@ -31,26 +31,47 @@ describe('GET /auth/SignUp', () => {
 });
 
 describe('POST /auth/SignIn', () => {
+  test('phone number should be in request cookies', async () => {
+    const res = await request(app).post('/auth/SignIn');
+    expect(res.statusCode).toBe(400);
+  });
+  test('phone number must be in correct format', async () => {
+    const res = await request(app)
+      .post('/auth/SignIn')
+      .set('Cookie', ['phoneNumber=19135350531']);
+    expect(res.statusCode).toBe(400);
+  });
   test('verification code should be present in request body', async () => {
     const res = await request(app)
       .post('/auth/SignIn')
-      .set('PhoneNumber', '09135350531');
+      .set('Cookie', ['phoneNumber=09135350531']);
     expect(res.statusCode).toBe(400);
   });
   test('verification code should be in correct format', async () => {
-    const body = {
-      VerificationCode: '125851',
-    };
     const res = await request(app)
       .post('/auth/SignIn')
-      .send(body)
-      .set('PhoneNumber', '09135350531');
+      .set('Cookie', ['phoneNumber=09135350531'])
+      .send({
+        verificationCode: '432434l;',
+      });
     expect(res.statusCode).toBe(400);
   });
   test('The verification code must have been previously requested', async () => {
     const res = await request(app)
       .post('/auth/SignIn')
-      .set('PhoneNumber', '09135350533');
+      .set('Cookie', ['phoneNumber=09135350533'])
+      .send({
+        verificationCode: '432434',
+      });
     expect(res.statusCode).toBe(404);
+  });
+  test('The verification code must have correct value', async () => {
+    const res = await request(app)
+      .post('/auth/SignIn')
+      .set('Cookie', ['phoneNumber=09135350531'])
+      .send({
+        verificationCode: '432434',
+      });
+    expect(res.statusCode).toBe(401);
   });
 });

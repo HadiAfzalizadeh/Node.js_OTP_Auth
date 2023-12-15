@@ -62,11 +62,11 @@ const setVerificationCache = (phoneNumber, verificationCode) => {
   }
 };
 
-const validateVerificationCode = (verificationCode) => {
-  const phoneNumberschema = Joi.string()
+const validateVerificationCodeFormat = (verificationCode) => {
+  const verificationCodechema = Joi.string()
     .pattern(new RegExp('^[0-9]{6,6}$'))
     .required();
-  const { error } = phoneNumberschema.validate(verificationCode);
+  const { error } = verificationCodechema.validate(verificationCode);
   if (error) {
     throw new CustomError(INVALID_PARAMETERS, 400).error(error);
   }
@@ -81,17 +81,13 @@ const signUpCheckCache = (phoneNumber) => {
   }
 };
 
-const signInCheckCache = (phoneNumber) => {
+const signInValidateVerificationCode = (phoneNumber, verificationCode) => {
   const hashedVerificationCode = verificationCache.get(phoneNumber);
   if (hashedVerificationCode === undefined) {
     throw new CustomError(NOT_REGISTERED_YET, 404);
   }
-};
-
-const signInValidateVerificationCode = (phoneNumber, verificationCode) => {
-  const hashedVerificationCode = verificationCache.get(phoneNumber);
   if (!bcrypt.compareSync(verificationCode, hashedVerificationCode)) {
-    throw new CustomError(INVALID_VARIFICATION_CODE, 400).saveToDatabase(true);
+    throw new CustomError(INVALID_VARIFICATION_CODE, 401);
   }
 };
 
@@ -99,8 +95,7 @@ module.exports = {
   sendOtpSms,
   validatePhoneNumber,
   setVerificationCache,
-  validateVerificationCode,
+  validateVerificationCodeFormat,
   signUpCheckCache,
-  signInCheckCache,
   signInValidateVerificationCode,
 };

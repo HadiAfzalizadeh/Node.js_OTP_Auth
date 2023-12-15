@@ -5,8 +5,7 @@ const {
   validatePhoneNumber,
   setVerificationCache,
   signUpCheckCache,
-  validateVerificationCode,
-  signInCheckCache,
+  validateVerificationCodeFormat,
   signInValidateVerificationCode,
 } = require('@utils/auth');
 const { SUCCESSFUL_LOGIN, SUCCESS_SENDING_VARIFICATION_CODE } =
@@ -55,14 +54,11 @@ exports.SignIn = (req, res) => {
 
   validatePhoneNumber(headerPhoneNumber);
 
-  validateVerificationCode(req.body.VerificationCode);
+  validateVerificationCodeFormat(req.body.verificationCode);
 
-  signInCheckCache(headerPhoneNumber);
+  signInValidateVerificationCode(headerPhoneNumber, req.body.verificationCode);
 
-  signInValidateVerificationCode(headerPhoneNumber, req.body.VerificationCode);
-
-  verificationCache.del(headerPhoneNumber);
-  return res
+  res
     .header(
       'Set-Cookie',
       cookie.serialize(
@@ -86,8 +82,9 @@ exports.SignIn = (req, res) => {
       ),
       message: SUCCESSFUL_LOGIN,
     });
+
+  verificationCache.del(headerPhoneNumber);
   // TODO - add refresh token to website
-  // TODO - limit the count tries of verification code
   // TODO - Authentication - XSS attacks
   // TODO - Authentication - man-in-the middle attack
   // eslint-disable-next-line max-len

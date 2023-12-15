@@ -13,9 +13,10 @@ exports.protect = (req, res, next) => {
     throw new CustomError(FORBIDDEN_ACCESS, 401);
   }
   try {
-    jwt.verify(bearerToken.split('Bearer ')[1], config.secrets.jwt);
+    jwt.verify(bearerToken, config.secrets.ACCESS_TOKEN_PRIVATE_KEY);
   } catch (err) {
-    throw new CustomError(FORBIDDEN_ACCESS, 401);
+    try {
+    } catch (error) {}
   }
   // TODO - Authentication - Verify received JWT
   next();
